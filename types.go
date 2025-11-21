@@ -26,3 +26,13 @@ type ShortenStatResponse struct {
 	UpdatedAt string `json:"updatedAt"`
 	AccessCount int64  `json:"accessCount"`
 }
+
+type Store interface {
+	Create(shortenURL *ShortenStatResponse) error
+	Get(shortCode string) (*ShortenStatResponse, error)
+	Update(shortCode string, url string) (*ShortenStatResponse, error)
+	Delete(shortCode string) error
+	Exists(shortCode string) bool
+	IncrementAccessCount(shortCode string) error
+	NextID() int64
+}

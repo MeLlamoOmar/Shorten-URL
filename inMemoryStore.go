@@ -2,27 +2,17 @@ package main
 
 import "fmt"
 
-type Store interface {
-	Create(shortenURL *ShortenStatResponse) error
-	Get(shortCode string) (*ShortenStatResponse, error)
-	Update(shortCode string, url string) (*ShortenStatResponse, error)
-	Delete(shortCode string) error
-	Exists(shortCode string) bool
-	IncrementAccessCount(shortCode string) error
-	NextID() int64
-}
-
-type InMemoryStore struct {
+type inMemoryStore struct {
 	data map[string]*ShortenStatResponse
 }
 
 func NewInMemoryStore() Store {
-	return &InMemoryStore{
+	return &inMemoryStore{
 		data: make(map[string]*ShortenStatResponse),
 	}
 }
 
-func (s *InMemoryStore) Create(shortenURL *ShortenStatResponse) error {
+func (s *inMemoryStore) Create(shortenURL *ShortenStatResponse) error {
 	if s.data[shortenURL.URL] != nil {
 		return fmt.Errorf("esta url ya existe")
 	}
@@ -31,7 +21,7 @@ func (s *InMemoryStore) Create(shortenURL *ShortenStatResponse) error {
 	return nil
 }
 
-func (s *InMemoryStore) Get(shortCode string) (*ShortenStatResponse, error) {
+func (s *inMemoryStore) Get(shortCode string) (*ShortenStatResponse, error) {
 	if shortenURL, exists := s.data[shortCode]; exists {
 		return shortenURL, nil
 	}
@@ -39,7 +29,7 @@ func (s *InMemoryStore) Get(shortCode string) (*ShortenStatResponse, error) {
 	return nil, fmt.Errorf("url no encontrada")
 }
 
-func (s *InMemoryStore) Update(shortCode string, url string) (*ShortenStatResponse, error) {
+func (s *inMemoryStore) Update(shortCode string, url string) (*ShortenStatResponse, error) {
 	if shortenURL, exists := s.data[shortCode]; exists {
 		shortenURL.URL = url
 		return shortenURL, nil
@@ -48,7 +38,7 @@ func (s *InMemoryStore) Update(shortCode string, url string) (*ShortenStatRespon
 	return nil, fmt.Errorf("url no encontrada")
 }
 
-func (s *InMemoryStore) Delete(shortCode string) error {
+func (s *inMemoryStore) Delete(shortCode string) error {
 	if _, exists := s.data[shortCode]; exists {
 		delete(s.data, shortCode)
 		return nil
@@ -57,12 +47,12 @@ func (s *InMemoryStore) Delete(shortCode string) error {
 	return fmt.Errorf("url no encontrada")
 }
 
-func (s *InMemoryStore) Exists(shortCode string) bool {
+func (s *inMemoryStore) Exists(shortCode string) bool {
 	_, exists := s.data[shortCode]
 	return exists
 }
 
-func (s *InMemoryStore) IncrementAccessCount(shortCode string) error {
+func (s *inMemoryStore) IncrementAccessCount(shortCode string) error {
 	if shortenURL, exists := s.data[shortCode]; exists {
 		shortenURL.AccessCount++
 		return nil
@@ -71,6 +61,6 @@ func (s *InMemoryStore) IncrementAccessCount(shortCode string) error {
 	return fmt.Errorf("url no encontrada")
 }
 
-func (s *InMemoryStore) NextID() int64 {
+func (s *inMemoryStore) NextID() int64 {
 	return int64(len(s.data) + 1)
 }
