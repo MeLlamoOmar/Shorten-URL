@@ -1,12 +1,23 @@
 package main
 
 import (
+	"database/sql"
+	"log"
+
 	"github.com/labstack/echo/v4"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	inMemoryStore := NewInMemoryStore()
-	urlService := NewURLService(inMemoryStore)
+	// inMemoryStore := NewInMemoryStore()
+	db, err := sql.Open("sqlite3", "./urlShortener.db")
+	if err != nil {
+		log.Fatal("Cannot open DB")
+	}
+	defer db.Close()
+	
+	store := NewSQLStore(db)
+	urlService := NewURLService(store)
 	handler := NewHandler(urlService)
 	e := echo.New()
 
