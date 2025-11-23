@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type inMemoryStore struct {
 	data map[string]*ShortenStatResponse
@@ -12,13 +15,22 @@ func NewInMemoryStore() Store {
 	}
 }
 
-func (s *inMemoryStore) Create(shortenURL *ShortenStatResponse) error {
-	if s.data[shortenURL.URL] != nil {
-		return fmt.Errorf("esta url ya existe")
+func (s *inMemoryStore) Create(shortCode, originalURL string) (*ShortenStatResponse, error) {
+	shorten := ShortenStatResponse{
+		ID:          s.NextID(),
+		ShortCode:   shortCode,
+		OriginalURL: originalURL,
+		CreatedAt:   time.Now().Unix(),
+		UpdatedAt:   time.Now().Unix(),
+		AccessCount: 0,
 	}
 
-	s.data[shortenURL.ShortCode] = shortenURL
-	return nil
+	if s.data[shorten.OriginalURL] != nil {
+		return nil, fmt.Errorf("esta url ya existe")
+	}
+
+	s.data[shorten.ShortCode] = &shorten
+	return &shorten, nil
 }
 
 func (s *inMemoryStore) Get(shortCode string) (*ShortenStatResponse, error) {
@@ -31,10 +43,11 @@ func (s *inMemoryStore) Get(shortCode string) (*ShortenStatResponse, error) {
 
 func (s *inMemoryStore) Update(shortCode string, url string) (*ShortenStatResponse, error) {
 	if shortenURL, exists := s.data[shortCode]; exists {
-		shortenURL.URL = url
+		shortenURL.OriginalURL = url
+		shortenURL.UpdatedAt = time.Now().Unix()
 		return shortenURL, nil
 	}
-	
+
 	return nil, fmt.Errorf("url no encontrada")
 }
 
@@ -52,9 +65,9 @@ func (s *inMemoryStore) Exists(shortCode string) bool {
 	return exists
 }
 
-func (s *inMemoryStore) IncrementAccessCount(shortCode string) error {
+func (s *inMemoryStore) IncrementAccessCount(shortCode string, currentCount int) error {
 	if shortenURL, exists := s.data[shortCode]; exists {
-		shortenURL.AccessCount++
+		shortenURL.AccessCount = currentCount + 1
 		return nil
 	}
 
