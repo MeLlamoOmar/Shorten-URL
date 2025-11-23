@@ -3,7 +3,7 @@ APP := urlShortener
 MIGRATIONSDIR := migrations
 DBURL = sqlite3://urlShortener.db
 
-.PHONY: build test fmt create up down migrate-status
+.PHONY: build test fmt create up down migrate-status dev
 
 build:
 	go build -o urlShortener main.go	
@@ -14,6 +14,9 @@ test:
 fmt:
 	go fmt ./..
 
+dev:
+	go run .
+	
 create:
 	migrate create -ext sql -dir ${MIGRATIONSDIR} -seq ${NAME}
 
