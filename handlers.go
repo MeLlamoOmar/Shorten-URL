@@ -37,7 +37,7 @@ func (h *Handler) HandleGet(c echo.Context) error {
 		return c.String(http.StatusNotFound, err.Error())
 	}
 
-	if err := h.service.IncrementAccessCount(shortCode); err != nil {
+	if err := h.service.IncrementAccessCount(shortCode, shorten.AccessCount); err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 

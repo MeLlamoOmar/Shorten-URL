@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
 
 type Service interface {
@@ -10,7 +9,7 @@ type Service interface {
 	GetShortURL(shortCode string) (*ShortenStatResponse, error)
 	UpdateShortURL(shortCode string, newURL string) (*ShortenStatResponse, error)
 	DeleteShortURL(shortCode string) error
-	IncrementAccessCount(shortCode string) error
+	IncrementAccessCount(shortCode string, currentCount int) error
 }
 
 type URLService struct {
@@ -29,16 +28,8 @@ func (s *URLService) CreateShortURL(originalURL string) (*ShortenStatResponse, e
 		return nil, fmt.Errorf("%s", ErrShortCodeAlreadyExists{})
 	}
 
-	shorten := &ShortenStatResponse{
-		ID: s.store.NextID(),
-		URL: originalURL,
-		ShortCode: shortCode,
-		CreatedAt: time.Now().String(),
-		UpdatedAt: time.Now().String(),
-		AccessCount: 0,
-	}
-	
-	if err := s.store.Create(shorten); err != nil {
+	shorten, err := s.store.Create(shortCode, originalURL)
+	if err != nil {
 		return nil, err
 	}
 
@@ -55,7 +46,6 @@ func (s *URLService) UpdateShortURL(shortCode string, newURL string) (*ShortenSt
 		return nil, err
 	}
 
-	updatedShorten.UpdatedAt = time.Now().String()
 	return updatedShorten, nil
 }
 
@@ -63,6 +53,6 @@ func (s *URLService) DeleteShortURL(shortCode string) error {
 	return s.store.Delete(shortCode)
 }
 
-func (s *URLService) IncrementAccessCount(shortCode string) error {
-	return s.store.IncrementAccessCount(shortCode)
+func (s *URLService) IncrementAccessCount(shortCode string, currentCount int) error {
+	return s.store.IncrementAccessCount(shortCode, currentCount)
 }
