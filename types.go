@@ -7,32 +7,31 @@ func (e ErrShortCodeAlreadyExists) Error() string {
 }
 
 type ShortenRequest struct {
-	URL string `json:"url" validate:"required,url"`
+	OriginalURL string `json:"url" validate:"required,url"`
 }
 
 type ShortenResponse struct {
-	ID int64  `json:"id"`
-	URL string `json:"url"`
-	ShortCode string `json:"shortCode"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	ID          int64  `json:"id"`
+	OriginalURL string `json:"url"`
+	ShortCode   string `json:"shortCode"`
+	CreatedAt   int64  `json:"createdAt"`
+	UpdatedAt   int64  `json:"updatedAt"`
 }
 
 type ShortenStatResponse struct {
-	ID int64  `json:"id"`
-	URL string `json:"url"`
-	ShortCode string `json:"shortCode"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
-	AccessCount int64  `json:"accessCount"`
+	ID          int64  `json:"id"`
+	OriginalURL string `json:"url"`
+	ShortCode   string `json:"shortCode"`
+	CreatedAt   int64  `json:"createdAt"`
+	UpdatedAt   int64  `json:"updatedAt"`
+	AccessCount int    `json:"accessCount"`
 }
 
 type Store interface {
-	Create(shortenURL *ShortenStatResponse) error
+	Create(shortCode, originalURL string) (*ShortenStatResponse, error)
 	Get(shortCode string) (*ShortenStatResponse, error)
 	Update(shortCode string, url string) (*ShortenStatResponse, error)
 	Delete(shortCode string) error
 	Exists(shortCode string) bool
-	IncrementAccessCount(shortCode string) error
-	NextID() int64
+	IncrementAccessCount(shortCode string, currentCount int) error
 }

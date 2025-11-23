@@ -9,10 +9,10 @@ func GenerateChortCode(originalURL string) string {
 
 func TransformToShortenResponse(stat *ShortenStatResponse) *ShortenResponse {
 	return &ShortenResponse{
-		ID:        stat.ID,
-		URL:       stat.URL,
-		ShortCode: stat.ShortCode,
-		CreatedAt: stat.CreatedAt,
-		UpdatedAt: stat.UpdatedAt,
+		ID:          stat.ID,
+		OriginalURL: stat.OriginalURL,
+		ShortCode:   stat.ShortCode,
+		CreatedAt:   stat.CreatedAt,
+		UpdatedAt:   stat.UpdatedAt,
 	}
 }
