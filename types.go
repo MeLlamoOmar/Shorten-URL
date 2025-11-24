@@ -1,11 +1,5 @@
 package main
 
-type ErrShortCodeAlreadyExists struct{}
-
-func (e ErrShortCodeAlreadyExists) Error() string {
-	return "short code already exists"
-}
-
 type ShortenRequest struct {
 	OriginalURL string `json:"url" validate:"required,url"`
 }

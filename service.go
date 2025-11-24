@@ -25,7 +25,7 @@ func NewURLService(store Store) Service {
 func (s *URLService) CreateShortURL(originalURL string) (*ShortenStatResponse, error) {
 	shortCode := GenerateChortCode(originalURL)
 	if s.store.Exists(shortCode) {
-		return nil, fmt.Errorf("%s", ErrShortCodeAlreadyExists{})
+		return nil, fmt.Errorf("%s", "short code already exists")
 	}
 
 	shorten, err := s.store.Create(shortCode, originalURL)
