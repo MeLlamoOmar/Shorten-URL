@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS urls (
-  id SERIAL PRIMARY KEY,
+  id integer PRIMARY KEY AUTOINCREMENT,
   original_url TEXT NOT NULL,
   short_code TEXT NOT NULL UNIQUE,
   created_at INTEGER NOT NULL DEFAULT (unixepoch()),
